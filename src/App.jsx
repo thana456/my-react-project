@@ -1,124 +1,33 @@
-import './App.css'
-import { useState, useEffect } from 'react'
-
-const Header = () => (
-  <h1>Hacker News Stories</h1>
-)
-
-const InputWithLabel = ({
-  id,
-  value,
-  onInputChange,
-  type,
-  children,
-}) => (
-  <>
-    <label htmlFor={id}>
-      {children}
-    </label>
-
-    <input
-      id={id}
-      type={type}
-      value={value}
-      onChange={onInputChange}
-    />
-  </>
-)
-
-const Item = ({
-  story,
-  onRemoveItem,
-}) => (
-  <div>
-    <h3>
-      <a
-        href={story.url}
-        target="_blank"
-        rel="noreferrer"
-      >
-        {story.title}
-      </a>
-    </h3>
-
-    <p>Author: {story.author}</p>
-    <p>Points: {story.points}</p>
-    <p>Comments: {story.num_comments}</p>
-
-    <button
-      onClick={() =>
-        onRemoveItem(story.objectID)
-      }
-    >
-      Delete
-    </button>
-  </div>
-)
-
-const List = ({
-  stories,
-  onRemoveItem,
-}) => (
-  <div>
-    {stories.map((story) => (
-      <Item
-        key={story.objectID}
-        story={story}
-        onRemoveItem={onRemoveItem}
-      />
-    ))}
-  </div>
-)
+const API_ENDPOINT =
+  'https://hn.algolia.com/api/v1/search?query='
 
 const App = () => {
-  const [searchTerm, setSearchTerm] = useState(
-    localStorage.getItem('search') || ''
-  )
-
-  const initialStories = [
-    {
-      objectID: 101,
-      title: 'Introduction to React',
-      url: 'https://example.com/react',
-      author: 'Sarah',
-      points: 120,
-      num_comments: 35,
-    },
-    {
-      objectID: 102,
-      title: 'Modern JavaScript Features',
-      url: 'https://example.com/javascript',
-      author: 'Adam',
-      points: 150,
-      num_comments: 18,
-    },
-    {
-      objectID: 103,
-      title: 'Learning Node.js',
-      url: 'https://example.com/nodejs',
-      author: 'Lina',
-      points: 140,
-      num_comments: 42,
-    },
-  ]
+  const [searchTerm, setSearchTerm] =
+    useState(
+      localStorage.getItem('search') || ''
+    )
 
   const [stories, setStories] =
-    useState(initialStories)
+    useState([])
+
+  const [isLoading, setIsLoading] =
+    useState(false)
+
+  const [isError, setIsError] =
+    useState(false)
+
+  const [url, setUrl] = useState(
+    `${API_ENDPOINT}react`
+  )
 
   const handleSearch = (event) => {
     setSearchTerm(event.target.value)
   }
 
-  const handleRemoveStory = (
-    objectID
-  ) => {
-    const newStories =
-      stories.filter(
-        (story) =>
-          story.objectID !== objectID
-      )
-
-    setStories(newStories)
+  const handleSubmit = () => {
+    setUrl(
+      `${API_ENDPOINT}${searchTerm}`
+    )
   }
 
   useEffect(() => {
@@ -128,14 +37,23 @@ const App = () => {
     )
   }, [searchTerm])
 
-  const searchedStories =
-    stories.filter((story) =>
-      story.title
-        .toLowerCase()
-        .includes(
-          searchTerm.toLowerCase()
-        )
-    )
+  useEffect(() => {
+    setIsLoading(true)
+    setIsError(false)
+
+    fetch(url)
+      .then((response) =>
+        response.json()
+      )
+      .then((result) => {
+        setStories(result.hits)
+        setIsLoading(false)
+      })
+      .catch(() => {
+        setIsError(true)
+        setIsLoading(false)
+      })
+  }, [url])
 
   return (
     <div>
@@ -150,14 +68,25 @@ const App = () => {
         <strong>Search:</strong>
       </InputWithLabel>
 
-      <List
-        stories={searchedStories}
-        onRemoveItem={
-          handleRemoveStory
-        }
-      />
+      <button
+        type="button"
+        disabled={!searchTerm}
+        onClick={handleSubmit}
+      >
+        Submit
+      </button>
+
+      {isError && (
+        <p>
+          Something went wrong.
+        </p>
+      )}
+
+      {isLoading ? (
+        <p>Loading ...</p>
+      ) : (
+        <List stories={stories} />
+      )}
     </div>
   )
 }
-
-export default App
