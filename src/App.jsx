@@ -1,4 +1,5 @@
 import './App.css'
+
 const stories = [
   {
     objectID: 101,
@@ -26,13 +27,30 @@ const stories = [
   }
 ]
 
-function App() {
-  console.log(stories[0])
+function Header() {
+  return (
+    <h1>Hacker News Stories</h1>
+  )
+}
 
+function Search() {
   return (
     <div>
-      <h1>Hacker News Stories</h1>
+      <label htmlFor="search">
+        Search:
+      </label>
 
+      <input
+        type="text"
+        id="search"
+      />
+    </div>
+  )
+}
+
+function List() {
+  return (
+    <div>
       {stories.map((story) => (
         <div key={story.objectID}>
           <h3>
@@ -46,9 +64,7 @@ function App() {
           </h3>
 
           <p>Author: {story.author}</p>
-
           <span>Points: {story.points}</span>
-
           <p>Comments: {story.num_comments}</p>
         </div>
       ))}
@@ -56,4 +72,15 @@ function App() {
   )
 }
 
+function App() {
+  return (
+    <div>
+      <Header />
+      <Search />
+      <List />
+    </div>
+  )
+}
+
 export default App
+
