@@ -26,7 +26,10 @@ const InputWithLabel = ({
   </>
 )
 
-const Item = ({ story }) => (
+const Item = ({
+  story,
+  onRemoveItem,
+}) => (
   <div>
     <h3>
       <a
@@ -41,15 +44,27 @@ const Item = ({ story }) => (
     <p>Author: {story.author}</p>
     <p>Points: {story.points}</p>
     <p>Comments: {story.num_comments}</p>
+
+    <button
+      onClick={() =>
+        onRemoveItem(story.objectID)
+      }
+    >
+      Delete
+    </button>
   </div>
 )
 
-const List = ({ stories }) => (
+const List = ({
+  stories,
+  onRemoveItem,
+}) => (
   <div>
     {stories.map((story) => (
       <Item
         key={story.objectID}
         story={story}
+        onRemoveItem={onRemoveItem}
       />
     ))}
   </div>
@@ -60,7 +75,7 @@ const App = () => {
     localStorage.getItem('search') || ''
   )
 
-  const stories = [
+  const initialStories = [
     {
       objectID: 101,
       title: 'Introduction to React',
@@ -87,19 +102,40 @@ const App = () => {
     },
   ]
 
+  const [stories, setStories] =
+    useState(initialStories)
+
   const handleSearch = (event) => {
     setSearchTerm(event.target.value)
   }
 
+  const handleRemoveStory = (
+    objectID
+  ) => {
+    const newStories =
+      stories.filter(
+        (story) =>
+          story.objectID !== objectID
+      )
+
+    setStories(newStories)
+  }
+
   useEffect(() => {
-    localStorage.setItem('search', searchTerm)
+    localStorage.setItem(
+      'search',
+      searchTerm
+    )
   }, [searchTerm])
 
-  const searchedStories = stories.filter((story) =>
-    story.title
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase())
-  )
+  const searchedStories =
+    stories.filter((story) =>
+      story.title
+        .toLowerCase()
+        .includes(
+          searchTerm.toLowerCase()
+        )
+    )
 
   return (
     <div>
@@ -114,7 +150,12 @@ const App = () => {
         <strong>Search:</strong>
       </InputWithLabel>
 
-      <List stories={searchedStories} />
+      <List
+        stories={searchedStories}
+        onRemoveItem={
+          handleRemoveStory
+        }
+      />
     </div>
   )
 }
