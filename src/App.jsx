@@ -1,11 +1,11 @@
 import './App.css'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 const Header = () => (
   <h1>Hacker News Stories</h1>
 )
 
-const Search = ({ onSearch }) => {
+const Search = ({ searchTerm, onSearch }) => {
   console.log('Search rendered')
 
   return (
@@ -15,8 +15,9 @@ const Search = ({ onSearch }) => {
       </label>
 
       <input
-        type="text"
         id="search"
+        type="text"
+        value={searchTerm}
         onChange={onSearch}
       />
     </div>
@@ -36,7 +37,7 @@ const Item = ({ story }) => (
     </h3>
 
     <p>Author: {story.author}</p>
-    <span>Points: {story.points}</span>
+    <p>Points: {story.points}</p>
     <p>Comments: {story.num_comments}</p>
   </div>
 )
@@ -59,7 +60,9 @@ const List = ({ stories }) => {
 const App = () => {
   console.log('App rendered')
 
-  const [searchTerm, setSearchTerm] = useState('')
+  const [searchTerm, setSearchTerm] = useState(
+    localStorage.getItem('search') || ''
+  )
 
   const stories = [
     {
@@ -92,6 +95,10 @@ const App = () => {
     setSearchTerm(event.target.value)
   }
 
+  useEffect(() => {
+    localStorage.setItem('search', searchTerm)
+  }, [searchTerm])
+
   const searchedStories = stories.filter((story) =>
     story.title
       .toLowerCase()
@@ -102,7 +109,10 @@ const App = () => {
     <div>
       <Header />
 
-      <Search onSearch={handleSearch} />
+      <Search
+        searchTerm={searchTerm}
+        onSearch={handleSearch}
+      />
 
       <List stories={searchedStories} />
     </div>
