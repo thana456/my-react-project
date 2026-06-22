@@ -5,24 +5,26 @@ const Header = () => (
   <h1>Hacker News Stories</h1>
 )
 
-const Search = ({ searchTerm, onSearch }) => {
-  console.log('Search rendered')
+const InputWithLabel = ({
+  id,
+  value,
+  onInputChange,
+  type,
+  children,
+}) => (
+  <>
+    <label htmlFor={id}>
+      {children}
+    </label>
 
-  return (
-    <div>
-      <label htmlFor="search">
-        Search:
-      </label>
-
-      <input
-        id="search"
-        type="text"
-        value={searchTerm}
-        onChange={onSearch}
-      />
-    </div>
-  )
-}
+    <input
+      id={id}
+      type={type}
+      value={value}
+      onChange={onInputChange}
+    />
+  </>
+)
 
 const Item = ({ story }) => (
   <div>
@@ -42,24 +44,18 @@ const Item = ({ story }) => (
   </div>
 )
 
-const List = ({ stories }) => {
-  console.log('List rendered')
-
-  return (
-    <div>
-      {stories.map((story) => (
-        <Item
-          key={story.objectID}
-          story={story}
-        />
-      ))}
-    </div>
-  )
-}
+const List = ({ stories }) => (
+  <div>
+    {stories.map((story) => (
+      <Item
+        key={story.objectID}
+        story={story}
+      />
+    ))}
+  </div>
+)
 
 const App = () => {
-  console.log('App rendered')
-
   const [searchTerm, setSearchTerm] = useState(
     localStorage.getItem('search') || ''
   )
@@ -109,10 +105,14 @@ const App = () => {
     <div>
       <Header />
 
-      <Search
-        searchTerm={searchTerm}
-        onSearch={handleSearch}
-      />
+      <InputWithLabel
+        id="search"
+        type="text"
+        value={searchTerm}
+        onInputChange={handleSearch}
+      >
+        <strong>Search:</strong>
+      </InputWithLabel>
 
       <List stories={searchedStories} />
     </div>
