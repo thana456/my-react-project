@@ -1,45 +1,59 @@
-const courseTitle = "Web Development with React"
+import './App.css'
+const stories = [
+  {
+    objectID: 101,
+    title: "Introduction to React",
+    url: "https://example.com/react",
+    author: "Sarah",
+    points: 120,
+    num_comments: 35
+  },
+  {
+    objectID: 102,
+    title: "Modern JavaScript Features",
+    url: "https://example.com/javascript",
+    author: "Adam",
+    points: 150,
+    num_comments: 18
+  },
+  {
+    objectID: 103,
+    title: "Learning Node.js",
+    url: "https://example.com/nodejs",
+    author: "Lina",
+    points: 140,
+    num_comments: 42
+  }
+]
 
 function App() {
- const studentName = "Sarah"
+  console.log(stories[0])
 
- const student = {
- name: "Sarah",
- age: 20,
- track: "Software Engineering"
- }
+  return (
+    <div>
+      <h1>Hacker News Stories</h1>
 
- function sayHello() {
- return `Hello ${studentName}!`
- }
+      {stories.map((story) => (
+        <div key={story.objectID}>
+          <h3>
+            <a
+              href={story.url}
+              target="_blank"
+              rel="noreferrer"
+            >
+              {story.title}
+            </a>
+          </h3>
 
- return (
- <div>
- <h1>My First React Component</h1>
+          <p>Author: {story.author}</p>
 
- <p>Student Name: {studentName}</p>
+          <span>Points: {story.points}</span>
 
- <p>Course Title: {courseTitle}</p>
-
- <p>
- Welcome to {courseTitle}, {studentName}!
- </p>
-
- <label htmlFor="username">
- Enter your name:
- </label>
-
- <br />
-
- <input type="text" id="username" />
-
- <h2>Student Information</h2>
-
- <p>Name: {student.name}</p>
- <p>Age: {student.age}</p>
- <p>Track: {student.track}</p>
-
- <p>{sayHello()}</p>
- </div>
- )
+          <p>Comments: {story.num_comments}</p>
+        </div>
+      ))}
+    </div>
+  )
 }
+
+export default App
